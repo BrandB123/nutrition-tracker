@@ -1,37 +1,23 @@
 import type { PageServerLoad } from './$types.js'
-import type { NutritionItem } from '$lib/types/nutritionItem.js';
+import type { NutritionItem } from './$types.js';
+import { db } from '$lib/db'
 
-export const load: PageServerLoad =  () => {
-    const items: NutritionItem[]  = [
-        {
-            title: "yogurt",
-            amount: "2 servings",
-            time: '8:00am',
-            calories: 180,
-            protein: 10
-        },
-        {
-            title: "breakfast burrito",
-            amount: "",
-            time: '8:00am',
-            calories: 500,
-            protein: 20
-        },
-        {
-            title: "yogurt",
-            amount: "1 serving",
-            time: '8:00am',
-            calories: 140,
-            protein: 6
-        },
-        {
-            title: "milk",
-            amount: "36 oz",
-            time: '8:00am',
-            calories: 675,
-            protein: 36
-        },
-    ]
+async function getNutritionItems(){
+    const items = await db
+    .selectFrom('nutrition_items')
+    .selectAll()
+    .execute()  
+    return items;
+}
 
-    return { items };
+
+export const load: PageServerLoad =  async () => {
+    try {
+        const items = await getNutritionItems();
+        return { items };
+    } catch (error) {
+        const items: NutritionItem[] = [];
+        console.error(error);
+        return { items };
+    }
 }
