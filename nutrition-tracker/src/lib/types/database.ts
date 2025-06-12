@@ -15,7 +15,7 @@ export interface nutritionItems {
     id: Generated<number>
     title: string
     amount: string | null
-    time: string
+    time: Date
     calories: number
     protein: number
 }
