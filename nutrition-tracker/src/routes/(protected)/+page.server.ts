@@ -14,7 +14,7 @@ async function getNutritionItems(){
 
 function setTimestamp(time: string){
     const pm = time.includes('PM');
-    const timeArray = time.split(":");
+    const timeArray = time.replace(' ', ':').split(":");
     if (pm) {timeArray[0] = (Number(timeArray[0]) + 12).toString()}
     const timestamp = new Date();
     timestamp.setHours(Number(timeArray[0]), Number(timeArray[1]));
@@ -36,7 +36,7 @@ export const actions = {
 
         if (!time){
             return fail(422, {title, time, amount, calories, protein, message: "Missing Data: 'Time' is a required field." })
-        }else if (!time.toString().match(/^(0[1-9]|1[0-2]):[0-5][0-9] (am|pm)$/)) {
+        }else if (!time.toString().match(/^.?\d:[0-5][0-9] (am|pm|AM|PM)$/)) {
             return fail(422, {title, amount, calories, protein, message: "Invalid Data: 'Time' must match format of HH:MM AM/PM" })
         }
 
