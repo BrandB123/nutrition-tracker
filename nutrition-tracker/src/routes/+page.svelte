@@ -1,16 +1,10 @@
 <script lang='ts'>
     import type { PageProps } from "./$types";
-    // import type { NutritionItem } from "$lib/types";
-  import NutritionLineItem from "$lib/components/NutritionLineItem.svelte";
+    import NutritionLineItem from "$lib/components/NutritionLineItem.svelte";
 
     let { data }: PageProps = $props();
 
-    // let nutritionItems = $state([]);
     let nutritionItems = $state(data.items || []);
-
-    // if (!!data.items){
-    //     nutritionItems.push(data.items);
-    // }
 
     let totalCalories = $derived.by(() => {
         const caloriesArray = nutritionItems.map(item => item.calories)

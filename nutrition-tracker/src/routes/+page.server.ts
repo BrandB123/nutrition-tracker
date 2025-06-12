@@ -1,5 +1,5 @@
-import type { PageServerLoad } from './$types.js'
-import type { NutritionItem } from './$types.js';
+import type { PageServerLoad,  } from './$types'
+import type { NutritionItem } from '$lib/types';
 import { db } from '$lib/db'
 
 async function getNutritionItems(){
