@@ -2,9 +2,9 @@
     import type { PageProps } from "./$types";
     import NutritionLineItem from "$lib/components/NutritionLineItem.svelte";
 
-    let { data }: PageProps = $props();
+    let { data, form }: PageProps = $props();
 
-    let showForm = $state(false);
+    let showForm = $state(data.showForm);
 
     let nutritionItems = $state(data.items || []);
 
@@ -24,9 +24,11 @@
         return totalProtein;
     });
 
-    // TODO: find a way to allow the client to select a time that will then be used in a date object to be submitted to the db
-    let defaultDate = new Date().toLocaleTimeString().replace(' ', ':').split(':').splice(2, 1).join(':')
-    console.log(defaultDate);
+    function formatTimeField(){
+        const date = new Date().toLocaleTimeString().replace(' ', ':').split(':')
+        date.splice(2, 1);
+        return (`${date[0]}:${date[1]} ${date[2]}`);
+    }
 
 </script>
 
@@ -37,58 +39,89 @@
         <div>
             Total Protein: {totalProtein} grams
         </div>
-            
     </div>
-
-    <!-- <div class="w-full flex">
-        <button 
-            class="rounded-2xl px-2 ml-auto mr-3 text-3xl text-neutral-500 hover:text-black"
-            onclick={ () => {
-                console.log('clicked')
-                nutritionItems.push({            
-                    title: "milk",
-                    amount: "36 oz",
-                    time: "8:05am",
-                    calories: 675,
-                    protein: 36
-                }) 
-            }
-            }
-        >+</button>
-    </div> -->
 
     <div class="w-full flex">
         <button 
-            class="rounded-2xl px-2 ml-auto mr-3 text-3xl text-neutral-500 hover:text-black"
+            class="rounded-2xl px-2 ml-auto mr-3 text-3xl text-neutral-500 hover:text-white"
             onclick = { () => showForm = true }
         >+</button>
     </div>
 
     {#if showForm }
-    <form action="" class="p-6 w-1/2 mx-auto mb-10 rounded-xl bg-neutral-500 grid grid-cols-3 grid-rows-2 gap-4 relative">
+    <form 
+        method="POST" 
+        action="?/addNutritionItem" 
+        class="p-6 w-1/2 mx-auto mb-10 rounded-xl bg-neutral-500 grid grid-cols-3 grid-rows-2 gap-4 relative"
+    >
         <div class="flex flex-col col-span-2">
             <label for="title">Title</label>
-            <input type="text" name="title" placeholder="Chicken Breast" class="border border-black rounded-md bg-neutral-300 pl-2 py-1">
+            <input 
+                type="text" 
+                name="title" 
+                placeholder="Chicken Breast" 
+                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+                value={form?.title || ""}
+            >
+            {#if form?.message?.includes('Title')}
+                <legend 
+                    class="font-sm text-red-700 px-3">{form?.message}</legend>
+            {/if}
         </div>
 
         <div class="flex flex-col">
             <label for="time">Time</label>
-            <input type="text" name="time" value={new Date().toLocaleTimeString()} class="border border-black rounded-md bg-neutral-300 pl-2 py-1">
+            <input 
+                type="text" 
+                name="time" 
+                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+                value={form?.time ||  formatTimeField()} 
+            >
+            {#if form?.message?.includes('Time')}
+                <legend 
+                    class="font-sm text-red-700 px-3">{form?.message}</legend>
+            {/if}
         </div>
 
         <div class="flex flex-col">
             <label for="amount">Amount</label>
-            <input type="text" name="amount" placeholder="8oz, 2 servings, etc." class="border border-black rounded-md bg-neutral-300 pl-2 py-1">
+            <input 
+                type="text" 
+                name="amount" 
+                placeholder="8oz, 2 servings, etc." 
+                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+                value={form?.amount || ""}
+            >
         </div>
 
         <div class="flex flex-col">
             <label for="calories">Calories</label>
-            <input type="number" name="calories" placeholder="250" class="border border-black rounded-md bg-neutral-300 pl-2 py-1">
-        </div>
-
-        <div class="flex flex-col">
-            <label for="protein">Protein (in grams)</label>
-            <input type="number" name="protein" placeholder="30" class="border border-black rounded-md bg-neutral-300 pl-2 py-1">
+            <input 
+                type="number" 
+                name="calories" 
+                placeholder="250" 
+                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+                value={form?.calories || ""}
+                >
+                {#if form?.message?.includes('Calories')}
+                <legend 
+                class="font-sm text-red-700 px-3">{form?.message}</legend>
+                {/if}
+            </div>
+            
+            <div class="flex flex-col">
+                <label for="protein">Protein (in grams)</label>
+                <input 
+                type="number" 
+                name="protein" 
+                placeholder="30" 
+                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+                value={form?.protein || ""}
+            >
+            {#if form?.message?.includes('Protein')}
+                <legend 
+                    class="font-sm text-red-700 px-3">{form?.message}</legend>
+            {/if}
         </div>
         <button type="submit" class="col-start-2 col-end-3 hover:font-semibold">Submit</button>
         <button 
