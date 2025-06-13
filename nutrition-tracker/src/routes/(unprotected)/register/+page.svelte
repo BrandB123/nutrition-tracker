@@ -1,10 +1,12 @@
 <script lang="ts">
+    import type { PageProps } from './$types';
 
+    const { form }: PageProps = $props();
 </script>
 
 <div class="w-1/3 bg-neutral-300 rounded-2xl pt-10 px-10 pb-2 mx-auto mt-14">
     <h2 class="w-full mb-3 font-bold text-xl text-center">Sign Up Here</h2>
-    <form method="POST" action="" class="mx-auto py-3 grid grid-cols-2 gap-3">
+    <form method="POST" action="?/addUser" class="mx-auto py-3 grid grid-cols-2 gap-3">
         <div class="flex flex-col gap-2">
             <label 
                 for="firstName" 
@@ -15,11 +17,12 @@
             <input 
                 type="text" 
                 name="firstName" 
-                placeholder="placeholder" 
-                class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1"
+                placeholder="John" 
+                value={form?.firstName || ""}
+                class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1 capitalize"
             >
-            {#if false}
-                <legend class="ml-3 text-red-700">Error Message Here</legend>
+            {#if form?.message.includes("First")}
+                <legend class="ml-3 text-red-700">{ form.message }</legend>
             {/if}
         </div>
     
@@ -33,11 +36,12 @@
             <input 
                 type="text" 
                 name="lastName" 
-                placeholder="placeholder" 
-                class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1"
+                placeholder="Smith" 
+                value={form?.lastName || ""}
+                class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1 capitalize"
             >
-            {#if false}
-                <legend class="ml-3 text-red-700">Error Message Here</legend>
+            {#if form?.message.includes("Last")}
+                <legend class="ml-3 text-red-700">{ form.message }</legend>
             {/if}
         </div>
     
@@ -51,11 +55,12 @@
             <input 
                 type="text" 
                 name="email" 
-                placeholder="placeholder" 
+                placeholder="john@email.com" 
+                value={form?.email || ""}
                 class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1"
             >
-            {#if false}
-                <legend class="ml-3 text-red-700">Error Message Here</legend>
+            {#if form?.message.includes("Email")}
+                <legend class="ml-3 text-red-700">{ form.message }</legend>
             {/if}
         </div>
     
@@ -67,16 +72,19 @@
                 Password
             </label>
             <input 
-                type="text" 
+                type="password" 
                 name="password" 
-                placeholder="placeholder" 
                 class="w-11/12 bg-neutral-200 rounded-lg p-1 pl-2 ml-1"
             >
-            {#if false}
-                <legend class="ml-3 text-red-700">Error Message Here</legend>
+            {#if form?.message.includes("Password")}
+                <legend class="ml-3 text-red-700">{ form.message }</legend>
             {/if}
         </div>
     
         <button type="submit" class="mt-2 col-start-1 col-end-3 text-xl text-neutral-300 hover:text-white">Submit</button>
+
+        {#if form?.message.includes("Unexpected")}
+            <p class="col-start-1 col-end-3 text-center text-red-600 rounded-lg">{form?.message}</p>
+        {/if}
     </form>
 </div>

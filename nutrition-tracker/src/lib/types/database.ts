@@ -1,14 +1,17 @@
 import type { Generated } from 'kysely';
 
 export interface Database {
-    first_table: firstTable
+    users: usersTable
     nutrition_items: nutritionItems
 }
 
 
-export interface firstTable {
-    id: number
-    username: string
+export interface usersTable {
+    id: Generated<number>
+    email: string
+    first_name: string
+    last_name: string
+    password_hash: string
 }
 
 export interface nutritionItems {
