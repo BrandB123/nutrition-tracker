@@ -1,5 +1,5 @@
 import type { Actions } from "./$types";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { db } from "$lib/db";
 import bcrypt from "bcryptjs";
 
@@ -62,5 +62,6 @@ export const actions = {
             console.error(error)
             return fail(500, {firstName, lastName, email, message: "An Unexpected Error Occurred. Please try again later."})
         }
+        redirect(303, "/login")
     }
 } satisfies Actions

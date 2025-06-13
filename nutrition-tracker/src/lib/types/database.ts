@@ -1,12 +1,12 @@
-import type { Generated } from 'kysely';
+import type { Generated, Selectable } from 'kysely';
 
 export interface Database {
-    users: usersTable
-    nutrition_items: nutritionItems
+    users: UserTable
+    nutrition_items: nutritionItemsTable
 }
 
 
-export interface usersTable {
+export interface UserTable {
     id: Generated<number>
     email: string
     first_name: string
@@ -14,7 +14,9 @@ export interface usersTable {
     password_hash: string
 }
 
-export interface nutritionItems {
+export type User = Selectable<UserTable>
+
+export interface nutritionItemsTable {
     id: Generated<number>
     title: string
     amount: string | null
