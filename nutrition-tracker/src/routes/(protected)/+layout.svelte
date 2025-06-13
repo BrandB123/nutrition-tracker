@@ -2,5 +2,10 @@
 	let { children } = $props();
 </script>
 
-<h1 class="bg-sky-700 p-6 font-bold text-2xl font-tahoma">NUTRITION TRACKER</h1>
+<div class="bg-sky-700 p-6 font-tahoma flex">
+    <h1 class="font-bold text-2xl">NUTRITION TRACKER</h1>
+    <div class="ml-auto mr-6 flex gap-6 self-center">
+        <a href="/signout" class="hover:font-semibold">Sign Out</a>
+    </div>
+</div>
 {@render children()}
