@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types'
 import type { NutritionItem } from '$lib/types';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/db'
 
 async function getNutritionItems(){
@@ -68,7 +68,11 @@ export const actions = {
 } satisfies Actions
 
 
-export const load: PageServerLoad =  async ( { url } ) => {
+export const load: PageServerLoad =  async ( { cookies, url } ) => {
+    if (!cookies.get('token')){
+        throw redirect(303, '/login');
+    }
+    
     let showForm = url.search ? true : false
     try {
         const items = await getNutritionItems();
