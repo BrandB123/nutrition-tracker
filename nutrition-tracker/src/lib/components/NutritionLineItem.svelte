@@ -4,7 +4,7 @@
 </script>
 
 <div class="w-5/6 bg-stone-400 rounded-2xl flex gap-6 px-8 py-5 mx-auto text-lg relative">
-    <div class="text-black/50 w-1/12 text-center">
+    <div class="text-black w-1/12 text-center">
         {formatTimeField(nutritionItem.time) }
     </div>
     <div class=" w-5/12 capitalize">

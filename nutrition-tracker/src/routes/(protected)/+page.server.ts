@@ -6,6 +6,16 @@ import type { NutritionItem } from '$lib/types';
 import type { PageServerLoad, Actions } from './$types';
 import type { JwtPayload, PrivateKey } from 'jsonwebtoken';
 
+async function getFirstNutritionItem(userId: number){
+    const item = await db
+    .selectFrom('nutrition_items')
+    .selectAll()
+    .where('user_id', '=', userId)
+    .orderBy('time', 'asc')
+    .executeTakeFirst()
+    return item;
+}
+
 async function getNutritionItems(userId: number){
     const items = await db
     .selectFrom('nutrition_items')
@@ -14,6 +24,14 @@ async function getNutritionItems(userId: number){
     .orderBy('time', 'asc')
     .execute()  
     return items;
+}
+
+async function resetNutritionItems(userId: number, startOfDay: Date){
+    await db
+        .deleteFrom('nutrition_items')
+        .where('user_id', '=', userId)
+        .where('time', '<', startOfDay)
+        .executeTakeFirstOrThrow()
 }
 
 function setTimestamp(time: string){
@@ -104,7 +122,6 @@ export const actions = {
         if (!id || typeof id !== 'string' || isNaN(Number(id))){
             return fail(400, {message: "invalid submission. Please try again"});
         }
-
         try {
             await db
                 .deleteFrom('nutrition_items')
@@ -127,6 +144,7 @@ export const load: PageServerLoad =  async ( { cookies, url } ) => {
     const token = cookies.get('token');
     const privateKey: PrivateKey = process.env.PRIVATE_JWT_KEY;
     let id;
+    let items: NutritionItem[];
 
     if (!token){
         throw redirect(303, '/login');
@@ -142,11 +160,28 @@ export const load: PageServerLoad =  async ( { cookies, url } ) => {
     }
     
     let showForm = url.search.includes('addNutritionItem') ? true : false
+
     try {
-        const items = await getNutritionItems(id);
+        const res = await getFirstNutritionItem(id);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        if (res && res.time < startOfDay){
+            resetNutritionItems(id, startOfDay);
+        }
+    } catch(error) {
+        // add a redirect to an error page here so they can try to load the page again
+        items = [];
+        console.error(error);
+        return { items, showForm };
+    }
+
+    try {
+        items = await getNutritionItems(id);
         return { items, showForm};
     } catch (error) {
-        const items: NutritionItem[] = [];
+        // add a redirect to an error page here so they can try to load the page again
+        items = [];
         console.error(error);
         return { items, showForm };
     }

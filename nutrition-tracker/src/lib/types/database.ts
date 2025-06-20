@@ -5,7 +5,6 @@ export interface Database {
     nutrition_items: nutritionItemsTable
 }
 
-
 export interface UserTable {
     id: Generated<number>
     email: string
@@ -25,3 +24,5 @@ export interface nutritionItemsTable {
     protein: number
     user_id: number
 }
+
+export type NutritionItem = Selectable<nutritionItemsTable>
