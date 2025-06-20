@@ -23,4 +23,5 @@ export interface nutritionItemsTable {
     time: Date
     calories: number
     protein: number
+    user_id: number
 }

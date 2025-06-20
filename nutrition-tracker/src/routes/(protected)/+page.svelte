@@ -1,6 +1,7 @@
 <script lang='ts'>
-    import type { PageProps } from "./$types";
+    import { formatTimeField } from "$lib/modules";
     import NutritionLineItem from "$lib/components/NutritionLineItem.svelte";
+    import type { PageProps } from "./$types";
 
     let { data, form }: PageProps = $props();
 
@@ -23,12 +24,6 @@
         )
         return totalProtein;
     });
-
-    function formatTimeField(){
-        const date = new Date().toLocaleTimeString().replace(' ', ':').split(':')
-        date.splice(2, 1);
-        return (`${date[0]}:${date[1]} ${date[2]}`);
-    }
 
 </script>
 
@@ -75,7 +70,7 @@
                 type="text" 
                 name="time" 
                 class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.time ||  formatTimeField()} 
+                value={form?.time ||  formatTimeField(new Date())} 
             >
             {#if form?.message?.includes('Time')}
                 <legend 
@@ -123,6 +118,9 @@
                     class="font-sm text-red-700 px-3">{form?.message}</legend>
             {/if}
         </div>
+        {#if form?.message && form?.message.includes("Unexpected")}
+            <p class="col-start-1 col-end-3 text-center text-red-600 rounded-lg">{form?.message}</p>
+        {/if}
         <button type="submit" class="col-start-2 col-end-3 hover:font-semibold">Submit</button>
         <button 
             type="button" 
@@ -135,6 +133,8 @@
 
 {#if (!nutritionItems || nutritionItems.length === 0)}
     <div class="w-1/2 py-6 mx-auto text-center font-semibold">Add An Item To See It Here</div>
+{:else if form?.message && form?.message.includes("while loading")}
+    <p class="col-start-1 col-end-3 text-center text-red-600 rounded-lg">{form?.message}</p>
 {:else}
     <div class="flex flex-col gap-4">
         {#each nutritionItems as item}

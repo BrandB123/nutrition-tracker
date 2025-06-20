@@ -1,1 +1,1 @@
-export * from './getTimeFromTimeStampTZ'
+export * from './formatTimeField'

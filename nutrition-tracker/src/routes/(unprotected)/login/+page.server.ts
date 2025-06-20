@@ -3,7 +3,6 @@ import type { Actions } from "./$types";
 import bcrypt from "bcryptjs";
 import { db } from "$lib/db";
 import 'dotenv/config'
-
 import { fail, redirect } from "@sveltejs/kit";
 import jwt from 'jsonwebtoken';
 import type { PrivateKey } from "jsonwebtoken";
