@@ -130,6 +130,10 @@
     </form>
 {/if}
     
+{#if form?.message?.includes('Invalid Submission') || form?.message?.includes('Error Deleting Item') }
+<div 
+    class="w-full rounded-xl  bg-red-600/40 font-sm text-white text-center p-5 my-10 mx-4">{form?.message}</div>
+{/if}
 
 {#if (!nutritionItems || nutritionItems.length === 0)}
     <div class="w-1/2 py-6 mx-auto text-center font-semibold">Add An Item To See It Here</div>

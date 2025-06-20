@@ -95,6 +95,25 @@ export const actions = {
             console.error(error)
             return fail(500, {title, time, amount, calories, protein, message: "An Unexpected Error Occurred" })
         }
+    },
+
+    deleteNutritionItem: async ({ request }) => {
+        const data = await request.formData();
+        const id = data.get('id');
+
+        if (!id || typeof id !== 'string' || isNaN(Number(id))){
+            return fail(400, {message: "invalid submission. Please try again"});
+        }
+
+        try {
+            await db
+                .deleteFrom('nutrition_items')
+                .where('id', '=', Number(id))
+                .executeTakeFirstOrThrow()
+        } catch (error) {
+            console.log(error)
+            return fail(500, {message: "Error Deleting Item. Please try again"}); 
+        }
     }
 } satisfies Actions
 
@@ -122,7 +141,7 @@ export const load: PageServerLoad =  async ( { cookies, url } ) => {
         throw redirect(303, '/login');
     }
     
-    let showForm = url.search ? true : false
+    let showForm = url.search.includes('addNutritionItem') ? true : false
     try {
         const items = await getNutritionItems(id);
         return { items, showForm};
