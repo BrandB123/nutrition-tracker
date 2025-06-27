@@ -14,10 +14,11 @@ async function createTable(){
         await client.query(`
             CREATE TABLE IF NOT EXISTS ${process.argv[2]} (
                 id SERIAL PRIMARY KEY,
-                email VARCHAR(50) NOT NULL,
-                first_name VARCHAR(30) NOT NULL,
-                last_name VARCHAR(30) NOT NULL,
-                password_hash VARCHAR(50) NOT NULL
+                title VARCHAR(100) UNIQUE NOT NULL,
+                unit VARCHAR(20) NOT NULL,
+                calories_per_unit INTEGER NOT NULL,
+                protein_per_unit INTEGER NOT NULL,
+                user_id INTEGER REFERENCES users (id)
             )
         `)
         await client.end();

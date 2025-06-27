@@ -6,6 +6,7 @@
     let { data, form }: PageProps = $props();
 
     let showForm = $state(data.showForm);
+    let commonItemsForm = $state(false);
 
     let nutritionItems = $state(data.items || []);
 
@@ -50,78 +51,52 @@
         class="p-6 w-1/2 mx-auto mb-10 rounded-xl bg-neutral-500 grid grid-cols-3 grid-rows-2 gap-4 relative"
     >
         <div class="flex flex-col col-span-2">
-            <label for="title">Title</label>
-            <input 
-                type="text" 
-                name="title" 
-                placeholder="Chicken Breast" 
-                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.title || ""}
-            >
-            {#if form?.message?.includes('Title')}
-                <legend 
-                    class="font-sm text-red-700 px-3">{form?.message}</legend>
-            {/if}
+            {@render formField("title", "text", "Chicken Breast", form?.submittedData?.title || "", "Title", form?.message)}
         </div>
 
         <div class="flex flex-col">
-            <label for="time">Time</label>
-            <input 
-                type="text" 
-                name="time" 
-                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.time ||  formatTimeField(new Date())} 
-            >
-            {#if form?.message?.includes('Time')}
-                <legend 
-                    class="font-sm text-red-700 px-3">{form?.message}</legend>
-            {/if}
+            {@render formField("time", "text", "", form?.submittedData?.time ||  formatTimeField(new Date()), "Time", form?.message)}
         </div>
 
         <div class="flex flex-col">
-            <label for="amount">Amount</label>
-            <input 
-                type="text" 
-                name="amount" 
-                placeholder="8oz, 2 servings, etc." 
-                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.amount || ""}
-            >
+            {@render formField("Amount", "text", "8oz, 2 servings, etc.", form?.submittedData?.amount || "")}
         </div>
 
-        <div class="flex flex-col">
-            <label for="calories">Calories</label>
-            <input 
-                type="number" 
-                name="calories" 
-                placeholder="250" 
-                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.calories || ""}
-                >
-                {#if form?.message?.includes('Calories')}
-                <legend 
-                class="font-sm text-red-700 px-3">{form?.message}</legend>
-                {/if}
-            </div>
-            
             <div class="flex flex-col">
-                <label for="protein">Protein (in grams)</label>
-                <input 
-                type="number" 
-                name="protein" 
-                placeholder="30" 
-                class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
-                value={form?.protein || ""}
-            >
-            {#if form?.message?.includes('Protein')}
-                <legend 
-                    class="font-sm text-red-700 px-3">{form?.message}</legend>
-            {/if}
+                {@render formField("calories", "number", "250", form?.submittedData?.calories || "", "Calories", form?.message)}
+            </div>
+
+        <div class="flex flex-col">
+            {@render formField("protein", "number", "30", form?.submittedData?.protein || "", "Protein", form?.message)}
         </div>
+
+        <div class="col-start-1 col-end-4 text-right pr-8">
+            <label for="common-item">Make this a Common Item?</label>
+            <input type="checkbox" name="common-item" bind:checked={commonItemsForm}/>
+        </div>
+
+        {#if commonItemsForm}
+            <div class="flex flex-col">
+                {@render formField("unit", "text", "servings, oz, etc.", form?.submittedData?.unit || "",)}
+            </div>
+            <div class="flex flex-col">
+                {@render formField("calories-per-unit", "number", "250", form?.submittedData?.caloriesPerUnit || "", undefined, undefined, "Calories Per Unit")}
+            </div>
+            <div class="flex flex-col">
+                {@render formField("protein-per-unit", "text", "servings, oz, etc.", form?.submittedData?.proteinPerUnit || "", undefined, undefined, "Protein Per Unit")}
+            </div>
+        {/if}
+
+        {#if form?.message && form?.message.includes("Common")}
+            <p class="col-start-1 col-end-3 text-center text-red-600 rounded-lg">{form?.message}</p>
+        {/if}
+
         {#if form?.message && form?.message.includes("Unexpected")}
             <p class="col-start-1 col-end-3 text-center text-red-600 rounded-lg">{form?.message}</p>
         {/if}
+
         <button type="submit" class="col-start-2 col-end-3 hover:font-semibold">Submit</button>
+
         <button 
             type="button" 
             class="absolute top-1 right-3 font-light hover:font-semibold"
@@ -146,4 +121,26 @@
         {/each}
     </div>
 {/if}
+
+{#snippet formField(
+    name: string, 
+    type: string, 
+    placeholder: string, 
+    value: FormDataEntryValue | number, 
+    errorStringPrompt?: string, 
+    errorMessage?: string,
+    label?: string
+    )}
+<label for={name} class="capitalize">{label || name}</label>
+<input 
+    {type} 
+    {name}
+    {placeholder}
+    {value}
+    class="border border-black rounded-md bg-neutral-300 pl-2 py-1"
+/>
+{#if errorMessage && errorStringPrompt && errorMessage.includes(errorStringPrompt)}
+    <legend class="font-sm text-red-700 px-3">{errorMessage}</legend>
+{/if}
+{/snippet}
 

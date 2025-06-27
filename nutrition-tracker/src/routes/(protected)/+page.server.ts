@@ -54,7 +54,13 @@ export const actions = {
         const time = data.get('time');
         const calories = data.get('calories');
         const protein = data.get('protein');
+        const commonItem = data.get('common-item');
+        const unit = data.get('unit');
+        const caloriesPerUnit = data.get('calories-per-unit');
+        const proteinPerUnit = data.get('protein-per-unit');
         let id;
+
+        const submittedData = { title, amount, time, calories, protein, unit, caloriesPerUnit, proteinPerUnit}
 
         const token = cookies.get('token');
 
@@ -64,7 +70,7 @@ export const actions = {
 
         if (!process.env.PRIVATE_JWT_KEY){
             console.error('env var not found')
-            return fail(500, {title, time, amount, calories, protein, message: "An Unexpected Error Occurred. Please try again later."})
+            return fail(500, {submittedData, message: "An Unexpected Error Occurred. Please try again later."})
         }
 
         const privateKey: PrivateKey = process.env.PRIVATE_JWT_KEY;
@@ -79,20 +85,25 @@ export const actions = {
         }
 
         if (!title){
-            return fail(422, {title, time, amount, calories, protein, message: "Missing Data: 'Title' is a required field." })
+            return fail(422, {submittedData, message: "Missing Data: 'Title' is a required field." })
         }
 
         if (!time){
-            return fail(422, {title, time, amount, calories, protein, message: "Missing Data: 'Time' is a required field." })
+            return fail(422, {submittedData, message: "Missing Data: 'Time' is a required field." })
         }else if (!time.toString().match(/^.?\d:[0-5][0-9] (am|pm|AM|PM)$/)) {
             return fail(422, {title, amount, calories, protein, message: "Invalid Data: 'Time' must match format of HH:MM AM/PM" })
         }
 
         if (!calories){
-            return fail(422, {title, time, amount, calories, protein, message: "Missing Data: 'Calories' is a required field." })
+            return fail(422, {submittedData, message: "Missing Data: 'Calories' is a required field." })
         }
+
         if (!protein){
-            return fail(422, {title, time, amount, calories, protein, message: "Missing Data: 'Protein' is a required field." })
+            return fail(422, {submittedData, message: "Missing Data: 'Protein' is a required field." })
+        }
+
+        if (!!commonItem && !unit){
+            return fail(422, {submittedData, message: "Missing Data: Complete all fields of Common Item Form." })
         }
 
         try {
@@ -108,11 +119,32 @@ export const actions = {
                 })
                 .executeTakeFirstOrThrow()
 
-            return { success: true };
         } catch (error) {
             console.error(error)
-            return fail(500, {title, time, amount, calories, protein, message: "An Unexpected Error Occurred" })
+            return fail(500, {submittedData, message: "An Unexpected Error Occurred" })
         }
+
+        if (!!commonItem && !!unit && !!caloriesPerUnit && !!proteinPerUnit){
+            try {
+                await db
+                    .insertInto('common_items')
+                    .values({
+                        title: title.toString(),
+                        unit: unit.toString(),
+                        calories_per_unit: Number(caloriesPerUnit),
+                        protein_per_unit: Number(proteinPerUnit),
+                        user_id: id
+
+                    })
+                    .executeTakeFirstOrThrow()
+
+            } catch (error) {
+                console.error(error)
+                return fail(500, {submittedData, message: "An Unexpected Error Occurred" })
+            }
+        }
+
+        return { success: true };
     },
 
     deleteNutritionItem: async ({ request }) => {

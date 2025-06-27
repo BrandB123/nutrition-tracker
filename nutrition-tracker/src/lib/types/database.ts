@@ -1,8 +1,9 @@
-import type { Generated, Selectable } from 'kysely';
+import type { Insertable, Generated, Selectable } from 'kysely';
 
 export interface Database {
     users: UserTable
     nutrition_items: nutritionItemsTable
+    common_items: commonItemsTable
 }
 
 export interface UserTable {
@@ -26,3 +27,14 @@ export interface nutritionItemsTable {
 }
 
 export type NutritionItem = Selectable<nutritionItemsTable>
+
+export interface commonItemsTable {
+    id: Generated<number>
+    title: string
+    unit: string
+    calories_per_unit: number
+    protein_per_unit: number
+    user_id: number
+}
+
+export type CommonItem = Insertable<commonItemsTable>
